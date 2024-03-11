@@ -1,0 +1,57 @@
+mql5
+//+------------------------------------------------------------------+
+//|                         Trend direction colored                   |
+//|                 Developed by Forex Robot Easy Team                |
+//|                     Website: forexroboteasy.com                   |
+//+------------------------------------------------------------------+
+
+#property indicator_chart_window
+#property indicator_buffers 1
+#property indicator_color1 LimeGreen
+
+double TrendBuffer[];
+int trendDirection = 0;
+
+//+------------------------------------------------------------------+
+//| Custom indicator initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   // Indicator buffers mapping
+   SetIndexStyle(0, DRAW_COLOR_LINE);
+   SetIndexBuffer(0, TrendBuffer);
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Custom indicator iteration function                              |
+//+------------------------------------------------------------------+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])
+{
+   if(prev_calculated == 0)
+      trendDirection = 0;
+
+   for(int i = prev_calculated; i < rates_total; i++)
+   {
+      if(close[i] > open[i])
+         TrendBuffer[i] = 0; // Green-colored candle
+      else if(close[i] < open[i])
+         TrendBuffer[i] = 1; // Red-colored candle
+      else
+         TrendBuffer[i] = trendDirection;
+
+      trendDirection = TrendBuffer[i];
+   }
+
+   return(rates_total);
+}
